@@ -15,6 +15,5 @@ public class MvcConfig implements WebMvcConfigurer {
 
         //hello页面控制权限
         registry.addViewController("/hello").setViewName("hello");
-        registry.addViewController("/login").setViewName("login");
     }
 }
