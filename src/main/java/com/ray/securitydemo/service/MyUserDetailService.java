@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,22 +38,27 @@ public class MyUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
+        //用户
         var user = userDao.findByUserName(username);
         if (user == null) {
             throw new UsernameNotFoundException(username + " not found");
         }
 
+        //用户角色
         var userRoles = userAndRoleDao.findAllByUserId(user.getId());
 
-        var roleIdList = userRoles.stream().map(UserAndRole::getRoleId).collect(Collectors.toList());
+        var roleIdList = userRoles.stream()
+                .map(UserAndRole::getRoleId)
+                .collect(Collectors.toList());
 
-        List<Role> roleList = roleDao.findAllByIdIn(roleIdList);
+        //用户角色列表
+        var roleList = roleDao.findAllByIdIn(roleIdList);
 
         var authorityList = roleList.stream()
                 .map(r -> new SimpleGrantedAuthority(r.getRoleName()))
                 .collect(Collectors.toList());
 
-        //返回了用户名，密码，权限列表
+        //返回了用户名，密码，权限列表，密码返回交由Security去判断是否正确
         //注意这个User不是我们定义的User，是Security中的User
         return new User(user.getUserName(), user.getPassword(), authorityList);
 
