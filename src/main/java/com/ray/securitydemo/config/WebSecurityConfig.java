@@ -28,18 +28,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 配置可否访问的url
+     * 请求匹配调度和授权
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/register").permitAll()  // / & /home 不需要认证
+                .antMatchers("/", "/home", "/register")
+                //.hasRole("ADMIN")  拥有admin
+                .permitAll()  // / & /home 不需要认证
                 .anyRequest()
                 .authenticated()
+
                 .and()
                 .formLogin()
                 .loginPage("/login")         // 指定登录地址
                 .permitAll()
+
                 .and()
                 .logout()
                 .permitAll();
